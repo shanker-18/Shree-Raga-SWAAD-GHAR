@@ -2,6 +2,7 @@
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
+<<<<<<< HEAD
     extend: {
       colors: {
         primary: {
@@ -67,6 +68,9 @@ export default {
         'premium': '1rem',
       },
     },
+=======
+    extend: {},
+>>>>>>> 74421ed2cd02417c4f930964ca1c2b8c2be28c7f
   },
   plugins: [],
 };

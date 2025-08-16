@@ -1,0 +1,39 @@
+services:
+  # Backend service
+  - type: web
+    name: shree-raga-swaad-ghar-api
+    env: node
+    buildCommand: npm install
+    startCommand: node server.js
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: VITE_EMAILJS_SERVICE_ID
+        sync: false
+      - key: VITE_EMAILJS_TEMPLATE_WAREHOUSE
+        sync: false
+      - key: VITE_EMAILJS_TEMPLATE_CUSTOMER
+        sync: false
+      - key: VITE_EMAILJS_PUBLIC_KEY
+        sync: false
+      - key: VITE_WAREHOUSE_EMAIL
+        sync: false
+
+  # Frontend service
+  - type: web
+    name: shree-raga-swaad-ghar-frontend
+    env: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        value: https://shree-raga-swaad-ghar-api.onrender.com

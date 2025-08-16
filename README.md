@@ -1,6 +1,6 @@
 # Shree Raga SWAAD GHAR
 
-A React-based web application built with Vite, TypeScript, and Tailwind CSS.
+A React-based e-commerce web application built with Vite, TypeScript, and Tailwind CSS, with a Node.js backend for order processing and email notifications.
 
 ## Features
 
@@ -9,9 +9,9 @@ A React-based web application built with Vite, TypeScript, and Tailwind CSS.
 - Tailwind CSS for styling
 - Framer Motion for animations
 - Lucide React for icons
-
-- MongoDB Data API for order storage
-- Local storage fallback for offline functionality
+- MongoDB for order storage
+- EmailJS for order notifications
+- Node.js Express backend API
 
 ## Development
 
@@ -22,77 +22,141 @@ npm install
 # Start development server
 npm run dev
 
+# Start backend server
+npm run server
+
 # Build for production
 npm run build
 
 # Preview production build
 npm run preview
-
-# Lint code
-npm run lint
 ```
 
-## Deployment
+## Deployment on Render
 
-### Render
+This project is configured for deployment on Render.com with separate services for the frontend and backend.
 
-This project is configured for deployment on Render. The deployment uses:
+### Prerequisites
 
-- Node.js 20.18.0
-- Build command: `npm ci && npm run build`
-- Start command: `npm start` (serves static files from `dist` directory)
+1. Create a Render account at [render.com](https://render.com)
+2. Connect your GitHub repository to Render
 
-### Vercel (Alternative)
+### Deployment Steps
 
-The project also includes a `vercel.json` configuration for Vercel deployment.
+1. **Deploy the Backend API**
+
+   - In Render dashboard, click "New" and select "Web Service"
+   - Connect to your GitHub repository
+   - Use the following settings:
+     - Name: `shree-raga-swaad-ghar-api`
+     - Environment: `Node`
+     - Build Command: `npm install`
+     - Start Command: `node server.js`
+   - Add the following environment variables:
+     - `MONGODB_URI`: Your MongoDB connection string
+     - `VITE_EMAILJS_SERVICE_ID`: Your EmailJS service ID
+     - `VITE_EMAILJS_TEMPLATE_WAREHOUSE`: Your EmailJS warehouse template ID
+     - `VITE_EMAILJS_TEMPLATE_CUSTOMER`: Your EmailJS customer template ID
+     - `VITE_EMAILJS_PUBLIC_KEY`: Your EmailJS public key
+     - `VITE_WAREHOUSE_EMAIL`: Your warehouse email address
+   - Click "Create Web Service"
+
+2. **Deploy the Frontend**
+
+   - In Render dashboard, click "New" and select "Static Site"
+   - Connect to your GitHub repository
+   - Use the following settings:
+     - Name: `shree-raga-swaad-ghar-frontend`
+     - Build Command: `npm install && npm run build`
+     - Publish Directory: `dist`
+   - Add the following environment variable:
+     - `VITE_API_URL`: URL of your backend API (e.g., `https://shree-raga-swaad-ghar-api.onrender.com`)
+   - Click "Create Static Site"
+
+3. **Alternative: Deploy using render.yaml**
+
+   - Render supports Blueprint deployments using the `render.yaml` file
+   - Push the repository with the updated `render.yaml` file
+   - In Render dashboard, click "New" and select "Blueprint"
+   - Connect to your GitHub repository
+   - Render will automatically detect the `render.yaml` file and create the services
+   - You'll still need to configure the environment variables
+
+### Testing the Deployment
+
+1. Once deployed, visit your frontend URL (e.g., `https://shree-raga-swaad-ghar-frontend.onrender.com`)
+2. Test the order placement functionality
+3. Verify that emails are being sent correctly
+
+## Additional Commands
+
+```bash
+# Lint code
+npm run lint
+
+# Run backend server
+npm run server
+
+# Run development server with nodemon
+npm run dev:server
+
+# Test email functionality
+npm run test:email
+```
 
 ## Service Configuration
 
+### MongoDB Setup
 
-
-### MongoDB Data API Setup
-
-The application uses MongoDB Data API for order storage with local storage fallback:
+The application uses MongoDB for order storage:
 
 1. Sign up for [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Create a cluster and enable the Data API
-3. Create a database named `raagaswaad` with a collection named `orders`
-4. Generate an API key and update the configuration in `src/services/mongodb.ts`:
-   ```typescript
-   const MONGODB_DATA_API_URL = 'https://data.mongodb-api.com/app/data-api/endpoint/data/v1/action';
-   const MONGODB_API_KEY = 'YOUR_MONGODB_DATA_API_KEY';
-   const MONGODB_DATA_SOURCE = 'YOUR_CLUSTER_NAME';
+2. Create a cluster and database
+3. Create a collection named `orders`
+4. Get your MongoDB connection string and add it to your environment variables:
+   ```
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
    ```
 
-## Supabase Setup (Legacy)
+### EmailJS Setup
 
-### Fixing RLS Policy Issues
+The application uses EmailJS for sending order notifications:
 
-If you encounter the error `unrecognized configuration parameter "app.current_user_id"` when creating orders, you need to fix the Row Level Security (RLS) policies for the orders table:
-
-1. Add your Supabase service key to the `.env` file:
+1. Sign up for [EmailJS](https://www.emailjs.com/)
+2. Create a service and connect it to your email provider (Gmail, Outlook, etc.)
+3. Create two email templates:
+   - Warehouse notification template
+   - Customer confirmation template
+4. Add the following environment variables:
    ```
-   SUPABASE_SERVICE_KEY=your_service_key_here
+   VITE_EMAILJS_SERVICE_ID=your_service_id
+   VITE_EMAILJS_TEMPLATE_WAREHOUSE=your_warehouse_template_id
+   VITE_EMAILJS_TEMPLATE_CUSTOMER=your_customer_template_id
+   VITE_EMAILJS_PUBLIC_KEY=your_public_key
+   VITE_WAREHOUSE_EMAIL=your_warehouse_email
    ```
 
-2. Run the fix script:
-   ```bash
-   node scripts/apply_orders_fix.js
-   ```
-
-This script will apply the correct RLS policies to the orders table, allowing both authenticated users and guests to create orders.
+For more details on EmailJS setup, refer to the `EMAIL_SETUP.md` file.
 
 ## Project Structure
 
 ```
-src/
-├── components/     # React components
-├── App.tsx        # Main app component
-├── main.tsx       # App entry point
-└── index.css      # Global styles
-
-public/            # Static assets
-dist/              # Production build output
+├── src/                  # Frontend source code
+│   ├── components/       # React components
+│   ├── services/         # Service modules
+│   ├── App.tsx          # Main app component
+│   ├── main.tsx         # App entry point
+│   └── index.css        # Global styles
+│
+├── server.js            # Express backend server
+├── models/              # MongoDB models
+├── services/            # Backend services
+│   └── email.ts         # Email service
+│
+├── public/              # Static assets
+├── dist/                # Production build output
+├── render.yaml          # Render deployment configuration
+└── EMAIL_SETUP.md       # Email integration documentation
 ```
 
 ## Technologies Used
@@ -103,3 +167,7 @@ dist/              # Production build output
 - Tailwind CSS
 - Framer Motion
 - Lucide React
+- Node.js with Express
+- MongoDB
+- EmailJS
+- Render for deployment

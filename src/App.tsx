@@ -1,4 +1,5 @@
 import React from 'react';
+<<<<<<< HEAD
 import { Route, Routes } from 'react-router-dom';
 import Homepage from './components/Homepage';
 import CategoryPage from './components/CategoryPage';
@@ -35,6 +36,12 @@ function App() {
       </CartProvider>
     </AuthProvider>
   );
+=======
+import Homepage from './components/Homepage';
+
+function App() {
+  return <Homepage />;
+>>>>>>> 74421ed2cd02417c4f930964ca1c2b8c2be28c7f
 }
 
 export default App;

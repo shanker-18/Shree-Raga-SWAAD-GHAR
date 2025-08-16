@@ -31,6 +31,6 @@ export default defineConfig({
     },
   },
   preview: {
-    allowedHosts: ['shree-raga-swaad-ghar.onrender.com', 'hub-yno6.onrender.com']
+    allowedHosts: ['shree-raga-swaad-ghar.onrender.com', 'hub-yno6.onrender.com', 'shree-raga-swaad-ghar-api.onrender.com', 'shree-raga-swaad-ghar-frontend.onrender.com']
   },
 });

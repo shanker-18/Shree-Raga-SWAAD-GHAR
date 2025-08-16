@@ -38,6 +38,11 @@ app.get('/', (req, res) => {
   res.send('ShreeRaagaSWAADGHAR API is running');
 });
 
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Server is running" });
+});
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
